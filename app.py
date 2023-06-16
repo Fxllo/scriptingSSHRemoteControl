@@ -1,7 +1,7 @@
 import paramiko
 import json
 
-def send_ssh_command(ip_address, username, password, command):
+def send_ssh_command(ip_address, username, password):
     try:
         # Crea un oggetto SSHClient
         client = paramiko.SSHClient()
@@ -13,10 +13,13 @@ def send_ssh_command(ip_address, username, password, command):
         client.connect(ip_address, username=username, password=password)
 
         # Esegui il comando remoto
-        stdin, stdout, stderr = client.exec_command(command)
+        stdin, stdout, stderr = client.exec_command(command="")
 
         # Leggi l'output del comando remoto
         output = stdout.read().decode('utf-8')
+        
+        if "TR069+ETH1+ADVPLUS" in output:
+            print("Advanced")
 
         # Stampa l'output
         print(f'Output del comando remoto:\n{output}')
@@ -38,6 +41,5 @@ with open('config.json', 'r') as json_file:
 username = data['username']
 password = data['password']
 ip_address = data['ip_address']
-command = data['command']
 
-send_ssh_command(ip_address, username, password, command)
+send_ssh_command(ip_address, username, password)
