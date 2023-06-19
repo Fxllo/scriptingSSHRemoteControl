@@ -1,5 +1,8 @@
 import paramiko
 import json
+import re
+
+# 178.20.72.19
 
 def send_ssh_command(ip_address, username, password):
     try:
@@ -13,16 +16,19 @@ def send_ssh_command(ip_address, username, password):
         client.connect(ip_address, username=username, password=password)
 
         # Esegui il comando remoto
-        stdin, stdout, stderr = client.exec_command(command="")
+        stdin, stdout, stderr = client.exec_command(command="conf")
 
         # Leggi l'output del comando remoto
         output = stdout.read().decode('utf-8')
-        
-        if "TR069+ETH1+ADVPLUS" in output:
-            print("Advanced")
 
         # Stampa l'output
         print(f'Output del comando remoto:\n{output}')
+
+        matches = re.findall(r'add firewall .*', output)
+        matches = [match.replace('\r\r', '') for match in matches]
+        
+        for i, match in enumerate(matches, 1):
+            print(f"{i}. {match}")
 
         # Chiudi la connessione SSH
         client.close()
