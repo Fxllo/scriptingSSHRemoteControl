@@ -13,7 +13,7 @@ def send_ssh_command(ip_address, username, password):
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         # Connettiti all'indirizzo IP specificato con nome utente e password
-        client.connect(ip_address, username=username, password=password)
+        client.connect(ip_address, port=port, username=username, password=password)
 
         # Esegui il comando remoto
         stdin, stdout, stderr = client.exec_command(command="conf")
@@ -47,5 +47,6 @@ with open('config.json', 'r') as json_file:
 username = data['username']
 password = data['password']
 ip_address = data['ip_address']
+port = data['port']
 
 send_ssh_command(ip_address, username, password)
