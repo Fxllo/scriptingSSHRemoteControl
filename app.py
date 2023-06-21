@@ -4,7 +4,7 @@ import re
 
 # 178.20.72.19
 
-def send_ssh_command(ip_address, username, password):
+def send_ssh_command(ip_address, username, password, port):
     try:
         # Crea un oggetto SSHClient
         client = paramiko.SSHClient()
@@ -13,10 +13,10 @@ def send_ssh_command(ip_address, username, password):
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         # Connettiti all'indirizzo IP specificato con nome utente e password
-        client.connect(ip_address, port=port, username=username, password=password)
+        client.connect(ip_address, port=port, username=username, password=password, timeout=15)
 
         # Esegui il comando remoto
-        stdin, stdout, stderr = client.exec_command(command="conf")
+        stdin, stdout, stderr = client.exec_command(command="conf", timeout=10)
 
         # Leggi l'output del comando remoto
         output = stdout.read().decode('utf-8')
@@ -49,4 +49,4 @@ password = data['password']
 ip_address = data['ip_address']
 port = data['port']
 
-send_ssh_command(ip_address, username, password)
+send_ssh_command(ip_address, username, password, port)
