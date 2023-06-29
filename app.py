@@ -4,7 +4,7 @@ import re
 
 # 178.20.72.19
 
-def send_ssh_command(ip_address, username, password, port):
+def send_ssh_command(ip_address, username, password):
     try:
         # Crea un oggetto SSHClient
         client = paramiko.SSHClient()
@@ -13,22 +13,24 @@ def send_ssh_command(ip_address, username, password, port):
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         # Connettiti all'indirizzo IP specificato con nome utente e password
-        client.connect(ip_address, port=port, username=username, password=password, timeout=15)
+        client.connect(ip_address, username=username, password=password, port=60022)
 
         # Esegui il comando remoto
-        stdin, stdout, stderr = client.exec_command(command="conf", timeout=10)
+        stdin, stdout, stderr = client.exec_command(command="conf")
 
         # Leggi l'output del comando remoto
         output = stdout.read().decode('utf-8')
-
-        # Stampa l'output
+        
         print(f'Output del comando remoto:\n{output}')
 
-        matches = re.findall(r'add firewall .*', output)
-        matches = [match.replace('\r\r', '') for match in matches]
+        # matches = re.findall(r'add firewall .*', output)
+        # matches = [match.replace('\r\r', '') for match in matches]
         
-        for i, match in enumerate(matches, 1):
-            print(f"{i}. {match}")
+        # acl = re.findall(r"ACL_WAN_BLOCK_ALL_MGMT_IPv4", output)
+        # acl = [acl.replace('\r\r', '') for a in acl]
+        # for i, match in enumerate(acl, 1):
+        #     # print(f"{i}. {match}")
+        #     print(f"{i}. {acl}")
 
         # Chiudi la connessione SSH
         client.close()
@@ -40,13 +42,11 @@ def send_ssh_command(ip_address, username, password, port):
     except Exception as e:
         print(f'Errore generico durante la connessione a {ip_address}: {str(e)}')
 
-# Esempio di utilizzo della funzione send_ssh_command
 with open('config.json', 'r') as json_file:
     data = json.load(json_file)
 
 username = data['username']
 password = data['password']
 ip_address = data['ip_address']
-port = data['port']
 
-send_ssh_command(ip_address, username, password, port)
+send_ssh_command(ip_address, username, password)
